@@ -30,33 +30,8 @@
 
         .safe {
             color: #00ff88;
-<!DOCTYPE html>
-<html>
-
-<head>
-
-    <title>EV + ADAS Dashboard</title>
-
-    <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: white;
-            text-align: center;
-            margin: 0;
         }
 
-        h1 {
-            margin-top: 30px;
-            font-size: 36px;
-        }
-
-        .status {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 20px;
-            padding: 15px;
         .warning {
             color: #ffcc00;
         }
@@ -137,7 +112,6 @@
 
     </div>
 
-
     <script>
 
         function updateDashboard() {
@@ -175,39 +149,35 @@
 
         }
 
+        function updateADAS(data) {
 
-function updateADAS(data) {
+            const adas = document.getElementById("adas");
 
-    const adas = document.getElementById("adas");
+            if (data.risk === "CRITICAL") {
 
-    if (data.risk === "CRITICAL") {
+                adas.textContent = "🚨 " + data.adas_status;
+                adas.className = "status danger";
 
-        adas.textContent = "🚨 " + data.adas_status;
-        adas.className = "status danger";
+            }
 
-    }
+            else if (data.risk === "WARNING") {
 
-    else if (data.risk === "WARNING") {
+                adas.textContent = "⚠️ " + data.adas_status;
+                adas.className = "status warning";
 
-        adas.textContent = "⚠️ " + data.adas_status;
-        adas.className = "status warning";
+            }
 
-    }
+            else {
 
-    else {
+                adas.textContent = "🟢 SYSTEM SAFE";
+                adas.className = "status safe";
 
-        adas.textContent = "🟢 SYSTEM SAFE";
-        adas.className = "status safe";
+            }
 
-    }
+        }
 
-}
-
-
-        // Update immediately
         updateDashboard();
 
-        // Update every 1 second
         setInterval(updateDashboard, 1000);
 
     </script>
