@@ -39,6 +39,29 @@
         .danger {
             color: #ff3333;
         }
+.adas-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 85%;
+    margin: 20px auto 40px;
+}
+
+.adas-item {
+    background: #222;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adas-item span {
+    font-size: 16px;
+    font-weight: bold;
+}
 
         .dashboard {
             display: grid;
@@ -71,6 +94,31 @@
 
     <div id="adas" class="status safe">
         🟢 SYSTEM SAFE
+    </div>
+    <h2>🚨 ADAS WARNING SYSTEM</h2>
+
+    <div class="adas-panel">
+
+        <div id="speedWarning" class="adas-item safe">
+            🚗 HIGH SPEED
+            <span>SAFE</span>
+        </div>
+
+        <div id="batteryWarning" class="adas-item safe">
+            🔋 LOW BATTERY
+            <span>SAFE</span>
+        </div>
+
+        <div id="temperatureWarning" class="adas-item safe">
+            🌡️ MOTOR OVERHEATING
+            <span>SAFE</span>
+        </div>
+
+        <div id="collisionWarning" class="adas-item safe">
+            🚨 COLLISION WARNING
+            <span>SAFE</span>
+        </div>
+
     </div>
 
     <div class="dashboard">
@@ -149,32 +197,111 @@
 
         }
 
-        function updateADAS(data) {
+function updateADAS(data) {
 
-            const adas = document.getElementById("adas");
+    const adas = document.getElementById("adas");
 
-            if (data.risk === "CRITICAL") {
+    // Overall ADAS status
+    if (data.risk === "CRITICAL") {
 
-                adas.textContent = "🚨 " + data.adas_status;
-                adas.className = "status danger";
+        adas.textContent = "🚨 " + data.adas_status;
+        adas.className = "status danger";
 
-            }
+    }
 
-            else if (data.risk === "WARNING") {
+    else if (data.risk === "WARNING") {
 
-                adas.textContent = "⚠️ " + data.adas_status;
-                adas.className = "status warning";
+        adas.textContent = "⚠️ " + data.adas_status;
+        adas.className = "status warning";
 
-            }
+    }
 
-            else {
+    else {
 
-                adas.textContent = "🟢 SYSTEM SAFE";
-                adas.className = "status safe";
+        adas.textContent = "🟢 SYSTEM SAFE";
+        adas.className = "status safe";
 
-            }
+    }
 
-        }
+
+    // Get warning list from backend
+    const warnings = data.warnings || [];
+
+
+    // HIGH SPEED
+    const speedWarning = document.getElementById("speedWarning");
+
+    if (warnings.includes("HIGH SPEED")) {
+
+        speedWarning.className = "adas-item danger";
+        speedWarning.querySelector("span").textContent = "WARNING";
+
+    }
+
+    else {
+
+        speedWarning.className = "adas-item safe";
+        speedWarning.querySelector("span").textContent = "SAFE";
+
+    }
+
+
+    // LOW BATTERY
+    const batteryWarning = document.getElementById("batteryWarning");
+
+    if (warnings.includes("LOW BATTERY")) {
+
+        batteryWarning.className = "adas-item danger";
+        batteryWarning.querySelector("span").textContent = "WARNING";
+
+    }
+
+    else {
+
+        batteryWarning.className = "adas-item safe";
+        batteryWarning.querySelector("span").textContent = "SAFE";
+
+    }
+
+
+    // MOTOR OVERHEATING
+    const temperatureWarning =
+        document.getElementById("temperatureWarning");
+
+    if (warnings.includes("MOTOR OVERHEATING")) {
+
+        temperatureWarning.className = "adas-item danger";
+        temperatureWarning.querySelector("span").textContent = "WARNING";
+
+    }
+
+    else {
+
+        temperatureWarning.className = "adas-item safe";
+        temperatureWarning.querySelector("span").textContent = "SAFE";
+
+    }
+
+
+    // COLLISION WARNING
+    const collisionWarning =
+        document.getElementById("collisionWarning");
+
+    if (warnings.includes("COLLISION WARNING")) {
+
+        collisionWarning.className = "adas-item danger";
+        collisionWarning.querySelector("span").textContent = "WARNING";
+
+    }
+
+    else {
+
+        collisionWarning.className = "adas-item safe";
+        collisionWarning.querySelector("span").textContent = "SAFE";
+
+    }
+
+}
 
         updateDashboard();
 
@@ -185,3 +312,4 @@
 </body>
 
 </html>
+
