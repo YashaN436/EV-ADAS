@@ -6,7 +6,6 @@ class ADASEngine:
         battery = data["battery"]
         temperature = data["temperature"]
         distance = data.get("distance", 100)
-
         warnings = []
 
         # -----------------------------
