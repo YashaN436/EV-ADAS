@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>EV + ADAS Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            margin-top: 30px;
+            font-size: 36px;
+        }
+
+        .status {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .safe {
+            color: #00ff88;
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>EV + ADAS Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            margin-top: 30px;
+            font-size: 36px;
+        }
+
+        .status {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px;
+            padding: 15px;
+        .warning {
+            color: #ffcc00;
+        }
+
+        .danger {
+            color: #ff3333;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 85%;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: #222;
+            padding: 30px;
+            border-radius: 15px;
+            font-size: 22px;
+        }
+
+        .value {
+            font-size: 40px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>⚡ ELECTRIC VEHICLE DASHBOARD</h1>
+
+    <div id="adas" class="status safe">
+        🟢 SYSTEM SAFE
+    </div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            🚗 Speed
+            <div class="value">
+                <span id="speed">--</span> km/h
+            </div>
+        </div>
+
+        <div class="card">
+            🔋 Battery
+            <div class="value">
+                <span id="battery">--</span> %
+            </div>
+        </div>
+
+        <div class="card">
+            ⚡ Voltage
+            <div class="value">
+                <span id="voltage">--</span> V
+            </div>
+        </div>
+
+        <div class="card">
+            🌡️ Motor Temperature
+            <div class="value">
+                <span id="temperature">--</span> °C
+            </div>
+        </div>
+
+        <div class="card">
+            📍 Distance
+            <div class="value">
+                <span id="distance">--</span> km
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function updateDashboard() {
+
+            fetch("/sensor-data")
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    document.getElementById("speed").textContent =
+                        data.speed;
+
+                    document.getElementById("battery").textContent =
+                        data.battery;
+
+                    document.getElementById("voltage").textContent =
+                        data.voltage;
+
+                    document.getElementById("temperature").textContent =
+                        data.temperature;
+
+                    document.getElementById("distance").textContent =
+                        data.distance;
+
+                    updateADAS(data);
+
+                })
+
+                .catch(error => {
+
+                    console.error("Sensor error:", error);
+
+                });
+
+        }
+
+
+function updateADAS(data) {
+
+    const adas = document.getElementById("adas");
+
+    if (data.risk === "CRITICAL") {
+
+        adas.textContent = "🚨 " + data.adas_status;
+        adas.className = "status danger";
+
+    }
+
+    else if (data.risk === "WARNING") {
+
+        adas.textContent = "⚠️ " + data.adas_status;
+        adas.className = "status warning";
+
+    }
+
+    else {
+
+        adas.textContent = "🟢 SYSTEM SAFE";
+        adas.className = "status safe";
+
+    }
+
+}
+
+
+        // Update immediately
+        updateDashboard();
+
+        // Update every 1 second
+        setInterval(updateDashboard, 1000);
+
+    </script>
+
+</body>
+
+</html>
