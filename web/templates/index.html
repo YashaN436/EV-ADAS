@@ -1,9 +1,17 @@
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>EV + ADAS Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
 
@@ -19,6 +27,14 @@
             margin-top: 30px;
             font-size: 36px;
         }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        /* =========================
+           OVERALL STATUS
+           ========================= */
 
         .status {
             font-size: 28px;
@@ -39,29 +55,67 @@
         .danger {
             color: #ff3333;
         }
-.adas-panel {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    width: 85%;
-    margin: 20px auto 40px;
-}
 
-.adas-item {
-    background: #222;
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 20px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* =========================
+           ADAS WARNING PANEL
+           ========================= */
 
-.adas-item span {
-    font-size: 16px;
-    font-weight: bold;
-}
+        .adas-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 85%;
+            margin: 20px auto 40px;
+        }
+
+        .adas-item {
+            background: #222;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .adas-item span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           REAL-TIME GRAPHS
+           ========================= */
+
+        .graphs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 85%;
+            margin: 20px auto 40px;
+        }
+
+        .graph-card {
+            background: #222;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .graph-card h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .graph-card canvas {
+            width: 100% !important;
+            height: 250px !important;
+        }
+
+        /* =========================
+           SENSOR DASHBOARD
+           ========================= */
 
         .dashboard {
             display: grid;
@@ -84,91 +138,485 @@
             margin-top: 15px;
         }
 
+        /* =========================
+           MOBILE RESPONSIVE
+           ========================= */
+
+        @media (max-width: 800px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .graphs {
+                grid-template-columns: 1fr;
+            }
+
+            .adas-panel {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+        }
+
     </style>
 
 </head>
 
+
 <body>
 
+    <!-- =========================
+         MAIN TITLE
+         ========================= -->
+
     <h1>⚡ ELECTRIC VEHICLE DASHBOARD</h1>
+
+
+    <!-- =========================
+         OVERALL ADAS STATUS
+         ========================= -->
 
     <div id="adas" class="status safe">
         🟢 SYSTEM SAFE
     </div>
+
+
+    <!-- =========================
+         ADAS WARNING SYSTEM
+         ========================= -->
+
     <h2>🚨 ADAS WARNING SYSTEM</h2>
+<div id="riskLevel" class="status safe">
+    🟢 SAFE
+</div>
 
     <div class="adas-panel">
 
         <div id="speedWarning" class="adas-item safe">
-            🚗 HIGH SPEED
+
+            <span>🚗 HIGH SPEED</span>
+
             <span>SAFE</span>
+
         </div>
+
 
         <div id="batteryWarning" class="adas-item safe">
-            🔋 LOW BATTERY
+
+            <span>🔋 LOW BATTERY</span>
+
             <span>SAFE</span>
+
         </div>
+
 
         <div id="temperatureWarning" class="adas-item safe">
-            🌡️ MOTOR OVERHEATING
+
+            <span>🌡️ MOTOR OVERHEATING</span>
+
             <span>SAFE</span>
+
         </div>
 
+
         <div id="collisionWarning" class="adas-item safe">
-            🚨 COLLISION WARNING
+
+            <span>🚨 COLLISION WARNING</span>
+
             <span>SAFE</span>
+
         </div>
 
     </div>
+
+
+    <!-- =========================
+         REAL-TIME GRAPHS
+         ========================= -->
+
+    <h2>📊 REAL-TIME VEHICLE DATA</h2>
+
+    <div class="graphs">
+
+        <div class="graph-card">
+
+            <h3>🚗 Speed</h3>
+
+            <canvas id="speedChart"></canvas>
+
+        </div>
+
+
+        <div class="graph-card">
+
+            <h3>🔋 Battery</h3>
+
+            <canvas id="batteryChart"></canvas>
+
+        </div>
+
+
+        <div class="graph-card">
+
+            <h3>🌡️ Motor Temperature</h3>
+
+            <canvas id="temperatureChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SENSOR CARDS
+         ========================= -->
 
     <div class="dashboard">
 
         <div class="card">
+
             🚗 Speed
+
             <div class="value">
+
                 <span id="speed">--</span> km/h
+
             </div>
+
         </div>
 
+
         <div class="card">
+
             🔋 Battery
+
             <div class="value">
+
                 <span id="battery">--</span> %
+
             </div>
+
         </div>
 
+
         <div class="card">
+
             ⚡ Voltage
+
             <div class="value">
+
                 <span id="voltage">--</span> V
+
             </div>
+
         </div>
 
+
         <div class="card">
+
             🌡️ Motor Temperature
+
             <div class="value">
+
                 <span id="temperature">--</span> °C
+
             </div>
+
+        </div>
+
+
+        <div class="card">
+
+            📍 Distance
+
+            <div class="value">
+
+                <span id="distance">--</span> km
+
+            </div>
+
         </div>
 
         <div class="card">
-            📍 Distance
+
+            🚨 Front Obstacle
+
             <div class="value">
-                <span id="distance">--</span> km
+
+                <span id="obstacleDistance">--</span> m
+
             </div>
+
         </div>
 
     </div>
 
+
+    <!-- =========================
+         JAVASCRIPT
+         ========================= -->
+
     <script>
+
+        /* =========================
+           GRAPH VARIABLES
+           ========================= */
+
+        const maxPoints = 20;
+
+        const timeLabels = [];
+
+        const speedData = [];
+
+        const batteryData = [];
+
+        const temperatureData = [];
+
+
+        /* =========================
+           SPEED CHART
+           ========================= */
+
+        const speedChart = new Chart(
+
+            document.getElementById("speedChart"),
+
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: timeLabels,
+
+                    datasets: [{
+
+                        label: "Speed (km/h)",
+
+                        data: speedData,
+
+                        borderWidth: 3,
+
+                        tension: 0.3
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    animation: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+
+        /* =========================
+           BATTERY CHART
+           ========================= */
+
+        const batteryChart = new Chart(
+
+            document.getElementById("batteryChart"),
+
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: timeLabels,
+
+                    datasets: [{
+
+                        label: "Battery (%)",
+
+                        data: batteryData,
+
+                        borderWidth: 3,
+
+                        tension: 0.3
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    animation: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+
+        /* =========================
+           TEMPERATURE CHART
+           ========================= */
+
+        const temperatureChart = new Chart(
+
+            document.getElementById("temperatureChart"),
+
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: timeLabels,
+
+                    datasets: [{
+
+                        label: "Temperature (°C)",
+
+                        data: temperatureData,
+
+                        borderWidth: 3,
+
+                        tension: 0.3
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    animation: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+
+        /* =========================
+           UPDATE GRAPHS
+           ========================= */
+
+        function updateGraphs(data) {
+
+            const now = new Date();
+
+            const time =
+
+                now.getHours().toString().padStart(2, "0") +
+
+                ":" +
+
+                now.getMinutes().toString().padStart(2, "0") +
+
+                ":" +
+
+                now.getSeconds().toString().padStart(2, "0");
+
+
+            timeLabels.push(time);
+
+            speedData.push(data.speed);
+
+            batteryData.push(data.battery);
+
+            temperatureData.push(data.temperature);
+
+
+            /* Keep only latest 20 readings */
+
+            if (timeLabels.length > maxPoints) {
+
+                timeLabels.shift();
+
+                speedData.shift();
+
+                batteryData.shift();
+
+                temperatureData.shift();
+
+            }
+
+
+            speedChart.update("none");
+
+            batteryChart.update("none");
+
+            temperatureChart.update("none");
+
+        }
+
+
+        /* =========================
+           UPDATE MAIN DASHBOARD
+           ========================= */
 
         function updateDashboard() {
 
             fetch("/sensor-data")
 
-                .then(response => response.json())
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "HTTP error: " + response.status
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
 
                 .then(data => {
+
+                    /* Sensor values */
 
                     document.getElementById("speed").textContent =
                         data.speed;
@@ -184,132 +632,295 @@
 
                     document.getElementById("distance").textContent =
                         data.distance;
+document.getElementById("obstacleDistance").textContent =
+    data.obstacle_distance;
+const obstacleCard =
+    document.getElementById("obstacleDistance").closest(".card");
+
+const obstacleDistance =
+    data.obstacle_distance;
+
+if (obstacleDistance <= 5) {
+
+    obstacleCard.style.border = "3px solid red";
+    obstacleCard.style.color = "red";
+
+}
+else if (obstacleDistance <= 10) {
+
+    obstacleCard.style.border = "3px solid orange";
+    obstacleCard.style.color = "orange";
+
+}
+else {
+
+    obstacleCard.style.border = "3px solid #00ff88";
+    obstacleCard.style.color = "#00ff88";
+
+}
+
+                    /* Update ADAS */
 
                     updateADAS(data);
+
+
+                    /* Update graphs */
+
+                    updateGraphs(data);
 
                 })
 
                 .catch(error => {
 
-                    console.error("Sensor error:", error);
+                    console.error(
+                        "Sensor error:",
+                        error
+                    );
 
                 });
 
         }
 
-function updateADAS(data) {
 
-    const adas = document.getElementById("adas");
+        /* =========================
+           UPDATE ADAS WARNING SYSTEM
+           ========================= */
 
-    // Overall ADAS status
-    if (data.risk === "CRITICAL") {
+        function updateADAS(data) {
+const riskLevel =
+    document.getElementById("riskLevel");
 
-        adas.textContent = "🚨 " + data.adas_status;
-        adas.className = "status danger";
+if (data.risk === "CRITICAL") {
 
-    }
+    riskLevel.textContent = "🚨 CRITICAL";
+    riskLevel.className = "status danger";
 
-    else if (data.risk === "WARNING") {
+}
+else if (data.risk === "WARNING") {
 
-        adas.textContent = "⚠️ " + data.adas_status;
-        adas.className = "status warning";
+    riskLevel.textContent = "⚠️ WARNING";
+    riskLevel.className = "status warning";
 
-    }
+}
+else {
 
-    else {
-
-        adas.textContent = "🟢 SYSTEM SAFE";
-        adas.className = "status safe";
-
-    }
-
-
-    // Get warning list from backend
-    const warnings = data.warnings || [];
-
-
-    // HIGH SPEED
-    const speedWarning = document.getElementById("speedWarning");
-
-    if (warnings.includes("HIGH SPEED")) {
-
-        speedWarning.className = "adas-item danger";
-        speedWarning.querySelector("span").textContent = "WARNING";
-
-    }
-
-    else {
-
-        speedWarning.className = "adas-item safe";
-        speedWarning.querySelector("span").textContent = "SAFE";
-
-    }
-
-
-    // LOW BATTERY
-    const batteryWarning = document.getElementById("batteryWarning");
-
-    if (warnings.includes("LOW BATTERY")) {
-
-        batteryWarning.className = "adas-item danger";
-        batteryWarning.querySelector("span").textContent = "WARNING";
-
-    }
-
-    else {
-
-        batteryWarning.className = "adas-item safe";
-        batteryWarning.querySelector("span").textContent = "SAFE";
-
-    }
-
-
-    // MOTOR OVERHEATING
-    const temperatureWarning =
-        document.getElementById("temperatureWarning");
-
-    if (warnings.includes("MOTOR OVERHEATING")) {
-
-        temperatureWarning.className = "adas-item danger";
-        temperatureWarning.querySelector("span").textContent = "WARNING";
-
-    }
-
-    else {
-
-        temperatureWarning.className = "adas-item safe";
-        temperatureWarning.querySelector("span").textContent = "SAFE";
-
-    }
-
-
-    // COLLISION WARNING
-    const collisionWarning =
-        document.getElementById("collisionWarning");
-
-    if (warnings.includes("COLLISION WARNING")) {
-
-        collisionWarning.className = "adas-item danger";
-        collisionWarning.querySelector("span").textContent = "WARNING";
-
-    }
-
-    else {
-
-        collisionWarning.className = "adas-item safe";
-        collisionWarning.querySelector("span").textContent = "SAFE";
-
-    }
+    riskLevel.textContent = "🟢 SAFE";
+    riskLevel.className = "status safe";
 
 }
 
+            const adas =
+                document.getElementById("adas");
+
+
+            /* Overall status */
+
+            if (data.risk === "CRITICAL") {
+
+                adas.textContent =
+                    "🚨 " + data.adas_status;
+
+                adas.className =
+                    "status danger";
+
+            }
+
+            else if (data.risk === "WARNING") {
+
+                adas.textContent =
+                    "⚠️ " + data.adas_status;
+
+                adas.className =
+                    "status warning";
+
+            }
+
+            else {
+
+                adas.textContent =
+                    "🟢 SYSTEM SAFE";
+
+                adas.className =
+                    "status safe";
+
+            }
+
+
+            /* Warning list */
+
+            const warnings =
+                data.warnings || [];
+
+
+            /* =========================
+               HIGH SPEED
+               ========================= */
+
+            const speedWarning =
+                document.getElementById(
+                    "speedWarning"
+                );
+
+
+            if (warnings.includes("HIGH SPEED")) {
+
+                speedWarning.className =
+                    "adas-item danger";
+
+                speedWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "WARNING";
+
+            }
+
+            else {
+
+                speedWarning.className =
+                    "adas-item safe";
+
+                speedWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "SAFE";
+
+            }
+
+
+            /* =========================
+               LOW BATTERY
+               ========================= */
+
+            const batteryWarning =
+                document.getElementById(
+                    "batteryWarning"
+                );
+
+
+            if (warnings.includes("LOW BATTERY")) {
+
+                batteryWarning.className =
+                    "adas-item danger";
+
+                batteryWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "WARNING";
+
+            }
+
+            else {
+
+                batteryWarning.className =
+                    "adas-item safe";
+
+                batteryWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "SAFE";
+
+            }
+
+
+            /* =========================
+               MOTOR OVERHEATING
+               ========================= */
+
+            const temperatureWarning =
+                document.getElementById(
+                    "temperatureWarning"
+                );
+
+
+            if (
+                warnings.includes(
+                    "MOTOR OVERHEATING"
+                )
+            ) {
+
+                temperatureWarning.className =
+                    "adas-item danger";
+
+                temperatureWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "WARNING";
+
+            }
+
+            else {
+
+                temperatureWarning.className =
+                    "adas-item safe";
+
+                temperatureWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "SAFE";
+
+            }
+
+
+            /* =========================
+               COLLISION WARNING
+               ========================= */
+
+            const collisionWarning =
+                document.getElementById(
+                    "collisionWarning"
+                );
+
+
+            if (
+                warnings.includes(
+                    "COLLISION WARNING"
+                )
+            ) {
+
+                collisionWarning.className =
+                    "adas-item danger";
+
+                collisionWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "WARNING";
+
+            }
+
+            else {
+
+                collisionWarning.className =
+                    "adas-item safe";
+
+                collisionWarning.querySelector(
+                    "span:last-child"
+                ).textContent =
+                    "SAFE";
+
+            }
+
+        }
+
+
+        /* =========================
+           INITIAL LOAD
+           ========================= */
+
         updateDashboard();
 
-        setInterval(updateDashboard, 1000);
+
+        /* =========================
+           UPDATE EVERY SECOND
+           ========================= */
+
+        setInterval(
+            updateDashboard,
+            1000
+        );
 
     </script>
 
 </body>
 
 </html>
-
+```
